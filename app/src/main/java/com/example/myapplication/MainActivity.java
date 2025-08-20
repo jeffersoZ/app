@@ -1,14 +1,46 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        super.onCreate(savedInstanceState, persistentState);
+        Log.d("ciclodevida", "onCreate:bombaclat ");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("ciclodevida", "onStart: bombaclat");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("ciclodevida", "onStop:  bombaclat2");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("ciclodevida", "onRestart: bl=ombalcad3");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("ciclodevida", "onDestroy: bomasdasd");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
