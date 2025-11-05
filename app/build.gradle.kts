@@ -33,6 +33,7 @@ android {
 
 dependencies {
 
+    implementation("com.github.skydoves:colorpickerview:2.3.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
