@@ -7,37 +7,78 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/buttonFa"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Fragmento A"
-        app:layout_constraintBottom_toTopOf="@+id/buttonFb"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonFb"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragmento B"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonFa" />
-
-    <FrameLayout
-        android:id="@+id/frameConteudo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btCor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cor"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btLivre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Livre"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btRetangulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ret"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btCirculo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Circ"
+            android:layout_marginEnd="4dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/toolbar2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btDesfazer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Desfazer"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btLimpar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Limpar" />
+    </LinearLayout>
+
+    <com.example.myapplication.SimplePaint
+        android:id="@+id/simplePaint"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
