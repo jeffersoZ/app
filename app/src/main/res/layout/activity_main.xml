@@ -8,36 +8,22 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/buttonFa"
+        android:id="@+id/buttonGetLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fragmento A"
-        app:layout_constraintBottom_toTopOf="@+id/buttonFb"
+        android:layout_marginTop="236dp"
+        android:text="Get Location"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/buttonFb"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fragmento B"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonFa" />
-
-    <FrameLayout
-        android:id="@+id/frameConteudo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonGetLocation" />
 </androidx.constraintlayout.widget.ConstraintLayout>
