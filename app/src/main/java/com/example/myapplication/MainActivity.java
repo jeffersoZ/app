@@ -1,66 +1,52 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    Button buttonFragmentA,buttonFragmentB;
+    ListView listView;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
-        buttonFragmentA=findViewById(R.id.buttonFa);
-        buttonFragmentB=findViewById(R.id.buttonFb);
+        String[] alunos = {"abacate1", "Abacate2", "Abacate3", "Abacate4", "Abacate5", "Abacate6"};
 
-        buttonFragmentA.setOnClickListener(this);
-        buttonFragmentB.setOnClickListener(this);
+        listView = findViewById(R.id.listView);
 
-    }
+        /*
+         * RESPOSTAS:
+         *
+         * 1. Papel do ArrayAdapter:
+         * O ArrayAdapter atua como uma ponte (adaptador) entre a fonte de dados (neste caso, o array de Strings 'alunos')
+         * e o componente de interface do usuário (ListView). Ele é responsável por pegar cada item do array,
+         * criar (ou reciclar) uma View para ele e preencher essa View com os dados correspondentes.
+         *
+         * 2. Parâmetros do ArrayAdapter:
+         * - Context (this): O contexto atual (Activity). Necessário para acessar recursos do sistema e inflar layouts.
+         * - int resource (R.layout.item_1): O ID do arquivo de layout XML que define como cada linha da lista será visualizada.
+         * - int textViewResourceId (android.R.id.text1): O ID do TextView dentro do layout acima onde o texto do item será colocado.
+         * - T[] objects (alunos): O array de dados que será exibido na lista.
+         *
+         * 3. Por que o Context é necessário?
+         * O Context é fundamental porque o ArrayAdapter precisa dele para obter o 'LayoutInflater' do sistema.
+         * O LayoutInflater é o serviço responsável por ler o XML do layout (R.layout.item_1) e transformá-lo em
+         * objetos View reais na memória (processo chamado de inflar). Sem o Context, o Adapter não conseguiria
+         * criar as visualizações para as linhas da lista.
+         */
+        adapter = new ArrayAdapter<>(
+                this,                 // Context: Contexto para inflar o layout
+                R.layout.item_1,      // Resource: Layout de cada item da lista
+                android.R.id.text1,   // TextViewResourceId: ID do TextView onde o dado vai
+                alunos                // Objects: Os dados
+        );
 
-    @Override
-    public void onClick(View v) {
-        // RESPOSTA 1: O Fragment é uma porção modular da interface do usuário.
-        // Ele deve ser preferido a uma Activity quando queremos reutilizar componentes de UI
-        // em diferentes telas ou criar navegação dinâmica (abas, gavetas) sem recarregar toda a tela.
-        Fragment fragment;
-        switch (v.getId()){
-            case (R.id.buttonFa):
-                fragment = new FragmentA();
-                break;
-
-            case (R.id.buttonFb):
-                fragment = new FragmentB();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + v.getId());
-        }
-
-        // RESPOSTA 3: Passagem de dados Activity -> Fragment
-        // A forma correta é usar Bundle e setArguments.
-        // Não passamos dados pelo construtor porque o Android recria o Fragment chamando o construtor vazio
-        // ao girar a tela, perdendo dados passados via construtor personalizado.
-        /* Exemplo:
-        Bundle args = new Bundle();
-        args.putString("chave", "valor");
-        fragment.setArguments(args);
-        */
-
-        // RESPOSTA 2: Ciclo de vida
-        // O ciclo do Fragment é atrelado à Activity (getSupportFragmentManager).
-        // Se a Activity morre, os Fragments morrem.
-        // Cuidado ao manipular dados: O Contexto do Fragment pode ser nulo se ele for desconectado.
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        
-        // Use 'replace' em vez de 'add' se quiser substituir o fragmento atual pelo novo.
-        fragmentTransaction.replace(R.id.frameConteudo, fragment);
-        fragmentTransaction.commit();
+        listView.setAdapter(adapter);
     }
 }
