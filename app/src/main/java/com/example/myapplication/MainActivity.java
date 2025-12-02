@@ -27,40 +27,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        // RESPOSTA 1: O Fragment é uma porção modular da interface do usuário.
-        // Ele deve ser preferido a uma Activity quando queremos reutilizar componentes de UI
-        // em diferentes telas ou criar navegação dinâmica (abas, gavetas) sem recarregar toda a tela.
-        Fragment fragment;
-        switch (v.getId()){
-            case (R.id.buttonFa):
-                fragment = new FragmentA();
-                break;
 
-            case (R.id.buttonFb):
-                fragment = new FragmentB();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + v.getId());
+        Fragment fragment;
+        int id = v.getId();
+
+        if (id == R.id.buttonFa) {
+            fragment = new FragmentA();
+            // Exemplo prático da Resposta 3 (Passagem de dados):
+            // Bundle bundle = new Bundle();
+            // bundle.putString("chave", "Olá Fragmento");
+            // fragment.setArguments(bundle);
+        } else if (id == R.id.buttonFb) {
+            fragment = new FragmentB();
+        } else {
+            throw new IllegalStateException("Unexpected value: " + id);
         }
 
-        // RESPOSTA 3: Passagem de dados Activity -> Fragment
-        // A forma correta é usar Bundle e setArguments.
-        // Não passamos dados pelo construtor porque o Android recria o Fragment chamando o construtor vazio
-        // ao girar a tela, perdendo dados passados via construtor personalizado.
-        /* Exemplo:
-        Bundle args = new Bundle();
-        args.putString("chave", "valor");
-        fragment.setArguments(args);
-        */
-
-        // RESPOSTA 2: Ciclo de vida
-        // O ciclo do Fragment é atrelado à Activity (getSupportFragmentManager).
-        // Se a Activity morre, os Fragments morrem.
-        // Cuidado ao manipular dados: O Contexto do Fragment pode ser nulo se ele for desconectado.
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+       FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         
-        // Use 'replace' em vez de 'add' se quiser substituir o fragmento atual pelo novo.
         fragmentTransaction.replace(R.id.frameConteudo, fragment);
         fragmentTransaction.commit();
     }
+
+    /*
+     * ---------------------------------------------------------------------------------------------
+     * RESPOSTAS TÉCNICAS:
+     *
+     * 1. Papel do Fragment e Preferência sobre Activity:
+     *    Um Fragment é um componente modular de UI que roda dentro de uma Activity. Pense nele como
+     *    uma "sub-tela" reutilizável.
+     *    Deve ser preferido quando:
+     *      - Você quer criar interfaces dinâmicas (abas, navegação lateral, viewpager) sem recarregar
+     *        toda a tela.
+     *      - Precisa de layouts adaptativos (ex: em Tablets mostra lista e detalhe lado a lado; em
+     *        Celulares mostra em telas separadas). O Fragment permite reutilizar a mesma lógica
+     *        nos dois casos.
+     *
+     * 2. Ciclo de Vida e Cuidados:
+     *    O ciclo de vida do Fragment é aninhado e dependente da Activity hospedeira.
+     *    Se a Activity entra em onPause(), o Fragment também entra. Se a Activity é destruída,
+     *    o Fragment também é.
+     *    Cuidados:
+     *      - O Fragment pode ser "desanexado" da Activity. Acessar `getActivity()` ou `getContext()`
+     *        pode retornar NULL e causar crash. Sempre verifique a nulidade ou use `isAdded()`.
+     *      - Não manipule elementos de UI da Activity diretamente de dentro do Fragment sem interfaces
+     *        (Callback), para manter o desacoplamento.
+     *
+     * 3. Passagem de Dados (Activity -> Fragment):
+     *    Nunca passe dados pelo construtor customizado (ex: `new FragmentA(dados)`), pois o sistema
+     *    pode recriar o fragmento (rotação de tela, falta de memória) usando o construtor padrão
+     *    vazio, perdendo seus dados.
+     *
+     *    Forma Correta (Bundle):
+     *      Fragment frag = new FragmentA();
+     *      Bundle args = new Bundle();
+     *      args.putString("meu_dado", "valor");
+     *      frag.setArguments(args);
+     *
+     *    Dentro do Fragment, recupera-se com: `getArguments().getString("meu_dado");`
+     * ---------------------------------------------------------------------------------------------
+     */
 }
