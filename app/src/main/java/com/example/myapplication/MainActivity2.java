@@ -15,31 +15,14 @@ public class MainActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        /*
-         * RESPOSTA 4: O uso de res/drawable melhora a organização separando a lógica de apresentação (imagens) do código Java.
-         * Isso permite que o Android escolha automaticamente a melhor versão da imagem dependendo da densidade da tela do dispositivo.
-         */
         tPeso = findViewById(R.id.tvPeso);
         tAltura = findViewById(R.id.tvaltura);
         tImc = findViewById(R.id.tvIMC);
         imagem = findViewById(R.id.imagem);
 
-        /*
-         * RESPOSTA 1 e 3: Utilizamos Intent para navegação para manter o "Acoplamento Fraco".
-         * A Activity atual não precisa saber detalhes internos da próxima, apenas envia uma mensagem (Intent) ao sistema.
-         * Os dados são "serializados" (convertidos em um formato padrão, via Parcelable/Bundle) para trafegar entre processos/telas do sistema.
-         */
+
         Bundle b = getIntent().getExtras();
 
-        /*
-         * RESPOSTA 2: Passagem de dados é feita via 'extras' (chave-valor).
-         * Para passar Strings "ola" e "boa tarde", na Activity anterior faríamos:
-         * intent.putExtra("saudacao1", "ola");
-         * intent.putExtra("saudacao2", "boa tarde");
-         *
-         * E aqui recuperaríamos:
-         * String s1 = b.getString("saudacao1");
-         */
 
         float altura = 0;
         float peso = 0;
@@ -55,10 +38,6 @@ public class MainActivity2 extends AppCompatActivity {
         tAltura.setText(Float.toString(altura));
         tImc.setText(Float.toString(imc));
 
-        /*
-         * RESPOSTA 5: Para tornar o app acessível, devemos adicionar descrições de conteúdo (ContentDescription)
-         * aos elementos visuais para que leitores de tela (como TalkBack) possam descrevê-los aos usuários.
-         */
         if (imc < 18.5) {
             imagem.setImageResource(R.drawable.abaixopeso);
             imagem.setContentDescription("Imagem ilustrativa: Abaixo do peso");
@@ -80,3 +59,39 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 }
+
+/*
+ * ---------------------------------------------------------------------------------------------
+ * RESPOSTAS TÉCNICAS:
+ *
+ * 1. Intent e Serialização:
+ *    Utilizamos Intents porque o Android gerencia o ciclo de vida das Activities. Não podemos simplesmente
+ *    dar "new MainActivity2()". A Intent é uma mensagem ao sistema operacional solicitando a troca de tela.
+ *    Os dados são serializados (convertidos em pacotes de bytes primitivos) dentro de um Bundle para que possam
+ *    ser transportados pelo sistema, inclusive entre processos diferentes, se necessário.
+ *
+ * 2. Passagem de Dados:
+ *    É feita através do método `putExtra(chave, valor)` na Activity de origem e recuperada via
+ *    `getIntent().getExtras()` na Activity de destino (como feito acima nas linhas 26-35).
+ *
+ * 3. Exemplo "ola" e "boa tarde":
+ *    Bastaria adicionar múltiplos extras na Intent de origem:
+ *    intent.putExtra("SAUDACAO_1", "ola");
+ *    intent.putExtra("SAUDACAO_2", "boa tarde");
+ *
+ * 4. Acoplamento Fraco:
+ *    Activities não conhecem as variáveis internas umas das outras. A MainActivity1 não acessa
+ *    diretamente `MainActivity2.tPeso`. Ela apenas envia uma mensagem (Intent). Se você mudar
+ *    o nome da variável `tPeso` aqui, a MainActivity1 continua funcionando. Isso facilita manutenção.
+ *
+ * 5. Uso de res/drawable:
+ *    Melhora a organização separando lógica (Java) de recursos (Imagens).
+ *    O Android escolhe automaticamente a melhor resolução da imagem dependendo da densidade da tela do celular,
+ *    garantindo que o visual fique nítido em qualquer dispositivo.
+ *
+ * 6. Acessibilidade (Importante!):
+ *    Observe o uso de `imagem.setContentDescription(...)` no código acima (linhas 45-60).
+ *    Isso é fundamental para deficientes visuais. Leitores de tela (TalkBack) leem esse texto
+ *    em voz alta para descrever a imagem, já que eles não podem vê-la.
+ * ---------------------------------------------------------------------------------------------
+ */
