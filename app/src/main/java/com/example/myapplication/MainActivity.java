@@ -16,35 +16,28 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     SQLiteDatabase database;
-    EditText nome;
-    Button saveButton;
-    ListView lista;
-    ArrayList<Nota> notasLista;
+    EditText edTitulo, edTexto;
+    Button btSalva;
+    ListView listaNotepads;
+    ArrayList<Notepad> notepadLista;
 
     NotasAdapter adapter;
 
-    public static class Nota {
+    // Classe modelo agora é Notepad
+    public static class Notepad {
         long id;
-        String nome;
+        String titulo;
         String texto;
 
-        public Nota(long id, String nome, String texto) {
+        public Notepad(long id, String titulo, String texto) {
             this.id = id;
-            this.nome = nome;
+            this.titulo = titulo;
             this.texto = texto;
         }
 
-        public long getId() {
-            return id;
-        }
-
-        public String getNome() {
-            return nome;
-        }
-
-        public String getTexto() {
-            return texto;
-        }
+        public long getId() { return id; }
+        public String getTitulo() { return titulo; }
+        public String getTexto() { return texto; }
     }
 
     @Override
@@ -53,64 +46,121 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        nome = findViewById(R.id.edNome);
-        saveButton = findViewById(R.id.btSalva);
-        lista = findViewById(R.id.lista);
-        notasLista = new ArrayList<>();
+        // IDs atualizados para o contexto de bloco de notas
+        edTitulo = findViewById(R.id.edTitulo);
+        edTexto = findViewById(R.id.edTexto);
+        btSalva = findViewById(R.id.btSalva);
+        listaNotepads = findViewById(R.id.listaNotepads);
+        notepadLista = new ArrayList<>();
 
         database = openOrCreateDatabase("app_database", MODE_PRIVATE, null);
 
-        database.execSQL("create table if not exists notas (" +
+        // Tabela agora é 'notepad' com colunas 'titulo' e 'texto'
+        database.execSQL("create table if not exists notepad (" +
                          "id integer primary key autoincrement," +
-                         "name varchar, texto varchar)");
+                         "titulo varchar, texto varchar)");
 
-        saveButton.setOnClickListener(v -> {
-            String texto = nome.getText().toString();
-            if (!texto.isEmpty()) {
+        btSalva.setOnClickListener(v -> {
+            String titulo = edTitulo.getText().toString();
+            String texto = edTexto.getText().toString();
+
+            if (!titulo.isEmpty()) {
                 ContentValues contentValues = new ContentValues();
-                contentValues.put("name", texto);
-                contentValues.put("texto", texto); // Adiciona o texto (usando o mesmo valor do nome)
-                database.insert("notas", null, contentValues); // Insere os dados na tabela "notas"
-                nome.setText("");
-                carregarNotas();
+                contentValues.put("titulo", titulo);
+                contentValues.put("texto", texto);
+                
+                database.insert("notepad", null, contentValues);
+                
+                edTitulo.setText("");
+                edTexto.setText("");
+                carregarNotepads();
             }
         });
 
-        carregarNotas();
+        carregarNotepads();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        carregarNotas();
+        carregarNotepads();
     }
 
-    public void carregarNotas() {
-        notasLista.clear();
+    public void carregarNotepads() {
+        notepadLista.clear();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM notas", null);
+        // Consulta na tabela 'notepad'
+        Cursor cursor = database.rawQuery("SELECT * FROM notepad", null);
 
         int idIndex = cursor.getColumnIndex("id");
-        int nameIndex = cursor.getColumnIndex("name");
+        int tituloIndex = cursor.getColumnIndex("titulo");
         int textoIndex = cursor.getColumnIndex("texto");
 
         if (cursor.moveToFirst()) {
             do {
-                if (idIndex != -1 && nameIndex != -1 && textoIndex != -1) {
+                if (idIndex != -1 && tituloIndex != -1 && textoIndex != -1) {
                     long id = cursor.getLong(idIndex);
-                    String name = cursor.getString(nameIndex);
+                    String titulo = cursor.getString(tituloIndex);
                     String texto = cursor.getString(textoIndex);
-                    notasLista.add(new Nota(id, name, texto));
+                    notepadLista.add(new Notepad(id, titulo, texto));
                 }
             } while (cursor.moveToNext());
         }
         cursor.close();
 
         if (adapter == null) {
-            adapter = new NotasAdapter(this, notasLista, database);
-            lista.setAdapter(adapter);
+            adapter = new NotasAdapter(this, notepadLista, database);
+            listaNotepads.setAdapter(adapter);
         } else {
             adapter.notifyDataSetChanged();
         }
     }
+
+    /*
+     * ---------------------------------------------------------------------------------------------
+     * RESPOSTAS SOBRE O FUNCIONAMENTO DO SQLITE NO ANDROID:
+     *
+     * 1. Integração e Componentes Principais:
+     *    O SQLite vem embutido no Android e não requer configuração de servidor. Sua manipulação
+     *    é feita através do pacote `android.database.sqlite`.
+     *    Componentes:
+     *      - SQLiteOpenHelper: Classe abstrata responsável por criar o banco de dados e gerenciar
+     *        suas versões (onCreate, onUpgrade). É a porta de entrada.
+     *      - SQLiteDatabase: Classe que representa o banco em si. Possui os métodos para executar
+     *        comandos SQL (insert, update, delete, query, execSQL).
+     *      - ContentValues: Estrutura de chave/valor usada para passar dados para métodos de inserção e atualização.
+     *        A chave é o nome da coluna e o valor é o dado a ser salvo.
+     *
+     * 2. Passagem de Parâmetros (Sem concatenação):
+     *    Nunca concatenamos strings em SQL para evitar falhas de segurança (SQL Injection) e erros de sintaxe (aspas).
+     *    Usamos o placeholder `?` na string SQL (cláusula WHERE) e passamos os valores em um array de Strings à parte.
+     *
+     *    Exemplo (Deletar uma nota específica baseada em ID e Título):
+     *      String whereClause = "id = ? AND titulo = ?";
+     *      String[] whereArgs = new String[] { String.valueOf(notaId), "Compras" };
+     *
+     *      // O Android substitui o primeiro ? pelo primeiro item do array, e assim por diante.
+     *      db.delete("tabela_notas", whereClause, whereArgs);
+     *
+     * 3. Estrutura de Dados Retornada (Cursor):
+     *    Ao fazer uma consulta (`query` ou `rawQuery`), o retorno é um objeto do tipo **Cursor**.
+     *
+     *    - O que é: O Cursor é uma interface que fornece acesso de leitura e escrita aleatória ao conjunto de resultados.
+     *      Ele funciona como um ponteiro para as linhas da tabela no banco.
+     *    - Por que essa estrutura: Por eficiência de memória. O banco não carrega todos os milhares de registros
+     *      para a memória RAM de uma vez. O Cursor carrega sob demanda conforme você navega.
+     *
+     *    - Como manipulamos (Ler todos os registros):
+     *      Cursor cursor = db.rawQuery("SELECT * FROM notas", null);
+     *      if (cursor.moveToFirst()) { // Move o cursor para a primeira linha
+     *          do {
+     *              // Recupera os dados das colunas pelo índice
+     *              int id = cursor.getInt(cursor.getColumnIndex("id"));
+     *              String texto = cursor.getString(cursor.getColumnIndex("texto"));
+     *              // Adiciona na lista de objetos...
+     *          } while (cursor.moveToNext()); // Move para a próxima linha até acabar
+     *      }
+     *      cursor.close(); // Importante fechar para liberar recursos
+     * ---------------------------------------------------------------------------------------------
+     */
 }

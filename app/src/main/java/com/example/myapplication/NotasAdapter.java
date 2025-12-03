@@ -13,25 +13,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.myapplication.MainActivity.Nota;
+import com.example.myapplication.MainActivity.Notepad;
 
 import java.util.ArrayList;
 
-public class NotasAdapter extends ArrayAdapter<Nota> {
+public class NotasAdapter extends ArrayAdapter<Notepad> {
 
     private final Context context;
-    private final ArrayList<Nota> notas;
+    private final ArrayList<Notepad> notepads;
     private final SQLiteDatabase database;
 
-    public NotasAdapter(Context context, ArrayList<Nota> notas, SQLiteDatabase database) {
-        super(context, R.layout.list_item_nota, notas);
+    public NotasAdapter(Context context, ArrayList<Notepad> notepads, SQLiteDatabase database) {
+        super(context, R.layout.list_item_notepad, notepads);
         this.context = context;
-        this.notas = notas;
+        this.notepads = notepads;
         this.database = database;
     }
 
     private static class ViewHolder {
-        TextView textViewNota;
+        TextView textViewTitulo;
         Button buttonEditar;
         Button buttonDelete;
     }
@@ -43,33 +43,35 @@ public class NotasAdapter extends ArrayAdapter<Nota> {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_nota, parent, false);
+            // Usando o novo layout ajustado
+            convertView = inflater.inflate(R.layout.list_item_notepad, parent, false);
 
             viewHolder = new ViewHolder();
-            viewHolder.textViewNota = convertView.findViewById(R.id.textViewNota);
+            viewHolder.textViewTitulo = convertView.findViewById(R.id.textViewTitulo);
             viewHolder.buttonEditar = convertView.findViewById(R.id.buttonEditar);
-            viewHolder.buttonDelete = convertView.findViewById(R.id.buttonDelete);
+            viewHolder.buttonDelete = convertView.findViewById(R.id.buttonDeletar);
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Nota nota = notas.get(position);
+        Notepad notepad = notepads.get(position);
 
-        viewHolder.textViewNota.setText(nota.getTexto());
+        viewHolder.textViewTitulo.setText(notepad.getTitulo());
 
         viewHolder.buttonEditar.setOnClickListener(v -> {
             Intent intent = new Intent(context, EditarNotaActivity.class);
-            intent.putExtra("NOTA_ID", nota.getId());
-            intent.putExtra("NOTA_NOME", nota.getNome());
-            intent.putExtra("NOTA_TEXTO", nota.getTexto());
+            intent.putExtra("NOTEPAD_ID", notepad.getId());
+            intent.putExtra("NOTEPAD_TITULO", notepad.getTitulo());
+            intent.putExtra("NOTEPAD_TEXTO", notepad.getTexto());
             context.startActivity(intent);
         });
 
         viewHolder.buttonDelete.setOnClickListener(v -> {
-            database.delete("notas", "id = ?", new String[]{String.valueOf(nota.getId())});
-            notas.remove(position);
+            // Deleta da tabela 'notepad'
+            database.delete("notepad", "id = ?", new String[]{String.valueOf(notepad.getId())});
+            notepads.remove(position);
             notifyDataSetChanged();
         });
 

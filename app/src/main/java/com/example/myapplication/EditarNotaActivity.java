@@ -10,40 +10,43 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class EditarNotaActivity extends AppCompatActivity {
 
-    private EditText editNome;
+    private EditText editTitulo;
     private EditText editTexto;
     private Button buttonSalvar;
     private SQLiteDatabase database;
-    private long notaId;
+    private long notepadId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_nota);
 
-        editNome = findViewById(R.id.editNome);
+        editTitulo = findViewById(R.id.editTitulo); // IDs ajustados no layout
         editTexto = findViewById(R.id.editTexto);
         buttonSalvar = findViewById(R.id.buttonSalvar);
+        
         database = openOrCreateDatabase("app_database", MODE_PRIVATE, null);
 
         Intent intent = getIntent();
-        notaId = intent.getLongExtra("NOTA_ID", -1);
-        String nome = intent.getStringExtra("NOTA_NOME");
-        String texto = intent.getStringExtra("NOTA_TEXTO");
+        // Recebendo as novas chaves de Intent
+        notepadId = intent.getLongExtra("NOTEPAD_ID", -1);
+        String titulo = intent.getStringExtra("NOTEPAD_TITULO");
+        String texto = intent.getStringExtra("NOTEPAD_TEXTO");
 
-        editNome.setText(nome);
+        editTitulo.setText(titulo);
         editTexto.setText(texto);
 
         buttonSalvar.setOnClickListener(v -> {
-            String novoNome = editNome.getText().toString();
+            String novoTitulo = editTitulo.getText().toString();
             String novoTexto = editTexto.getText().toString();
 
-            if (!novoNome.isEmpty() && !novoTexto.isEmpty()) {
+            if (!novoTitulo.isEmpty()) {
                 ContentValues contentValues = new ContentValues();
-                contentValues.put("name", novoNome);
+                // Colunas ajustadas para a tabela 'notepad'
+                contentValues.put("titulo", novoTitulo);
                 contentValues.put("texto", novoTexto);
 
-                database.update("notas", contentValues, "id = ?", new String[]{String.valueOf(notaId)});
+                database.update("notepad", contentValues, "id = ?", new String[]{String.valueOf(notepadId)});
 
                 finish();
             }
